@@ -17,6 +17,14 @@
       "type": "storage.azure",
       "connectionId": "FormsStorage",
       "dynamicId": null
+    },
+    "storage3": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ServiceLinker/locations/westus/connectors/FormsQueue_AF2829B94F",
+      "secretStore": "LocalSecretsFile",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Storage/storageAccounts/tfdemosetupa7cc",
+      "type": "storage.azure",
+      "connectionId": "FormsQueue",
+      "dynamicId": null
     }
   }
 }

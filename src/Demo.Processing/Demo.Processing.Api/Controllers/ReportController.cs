@@ -4,15 +4,16 @@ using Microsoft.AspNetCore.Mvc;
 namespace Demo.Processing.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class FormController : ControllerBase
+public class ReportController : ControllerBase
 {
-    [HttpPost]
-    public IActionResult Post(FormRequest request)
+    [HttpGet]
+    public IActionResult Get()
     {
-        return Ok(request);
+        return Ok();
     }
 }
 
-public class FormRequest
+public class ReportResponse
 {
+    
 }
