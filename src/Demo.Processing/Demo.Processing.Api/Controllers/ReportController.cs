@@ -9,7 +9,8 @@ public class ReportController : ControllerBase
     [HttpGet]
     public IActionResult Get()
     {
-        return Ok();
+        var response = new ReportResponse();
+        return Ok(response);
     }
 }
 
