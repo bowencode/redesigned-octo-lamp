@@ -3,3 +3,4 @@ tf-output.json
 *.tfstate.backup
 .terraform**
 *.tfplan
+*.zip
