@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Processing.Api", "Demo.Processing.Api\Demo.Processing.Api.csproj", "{0B04D4C8-CFA3-4EEA-9F10-A776F633612A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Processing.Api", "Demo.Processing.Api\Demo.Processing.Api.csproj", "{0B04D4C8-CFA3-4EEA-9F10-A776F633612A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Processing.Functions", "Demo.Processing.Functions\Demo.Processing.Functions.csproj", "{0C83F321-82A4-4CA8-8AA4-27DD24B05385}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Processing.Functions", "Demo.Processing.Functions\Demo.Processing.Functions.csproj", "{0C83F321-82A4-4CA8-8AA4-27DD24B05385}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Processing.Data", "Demo.Processing.Data\Demo.Processing.Data.csproj", "{DA04859C-2B9A-4F46-B05D-8F7E17992942}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{0C83F321-82A4-4CA8-8AA4-27DD24B05385}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C83F321-82A4-4CA8-8AA4-27DD24B05385}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C83F321-82A4-4CA8-8AA4-27DD24B05385}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA04859C-2B9A-4F46-B05D-8F7E17992942}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA04859C-2B9A-4F46-B05D-8F7E17992942}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA04859C-2B9A-4F46-B05D-8F7E17992942}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA04859C-2B9A-4F46-B05D-8F7E17992942}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
