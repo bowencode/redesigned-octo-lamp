@@ -3,7 +3,7 @@ resource "random_pet" "test_name" {
 }
 
 resource "azurerm_resource_group" "app-test-rg" {
-  name     = "${random_pet.test_name.id}rg"
+  name     = "${random_pet.test_name.id}-rg"
   location = var.azure_region
 }
 
@@ -32,19 +32,19 @@ resource "azurerm_storage_queue" "individual-queue" {
 }
 
 resource "azurerm_application_insights" "app-test-ai" {
-  name                = "${random_pet.test_name.id}appinsights"
+  name                = "${random_pet.test_name.id}-ai"
   location            = azurerm_resource_group.app-test-rg.location
   resource_group_name = azurerm_resource_group.app-test-rg.name
   application_type    = "web"
 }
 
-# module "sql-server" {
-#   source              = "./sqlazure"
-#   resource_group_name = azurerm_resource_group.app-test-rg.name
-#   location            = azurerm_resource_group.app-test-rg.location
-#   db_name             = "Customers"
-#   local_ip_address    = var.local_ip_address
-# }
+module "sql-server" {
+  source              = "./sqlazure"
+  resource_group_name = azurerm_resource_group.app-test-rg.name
+  location            = azurerm_resource_group.app-test-rg.location
+  db_name             = "Customers"
+  local_ip_address    = var.local_ip_address
+}
 
 module "function-app" {
   source                             = "./functions"

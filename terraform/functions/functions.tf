@@ -10,7 +10,7 @@ resource "null_resource" "function_app_build" {
 }
 
 data "archive_file" "file_function_app" {
-    depends_on = [ null_resource.function_app_build ]
+  depends_on  = [null_resource.function_app_build]
   type        = "zip"
   source_dir  = "${path.module}/../../src/Demo.Processing/Demo.Processing.Functions/bin/Debug/net7.0/publish/"
   output_path = "function-app.zip"
@@ -50,16 +50,17 @@ resource "azurerm_windows_function_app" "function_app" {
 }
 
 locals {
+  depends_on         = [azurerm_windows_function_app.function_app]
   deploy_app_command = "az webapp deployment source config-zip --resource-group ${var.resource_group_name} --name ${azurerm_windows_function_app.function_app.name} --src ${data.archive_file.file_function_app.output_path}"
 }
 
 resource "null_resource" "function_app_publish" {
+  depends_on = [local.deploy_app_command, data.archive_file.file_function_app]
+  triggers = {
+    input_zip            = data.archive_file.file_function_app.output_md5
+    publish_code_command = local.deploy_app_command
+  }
   provisioner "local-exec" {
     command = local.deploy_app_command
-  }
-  depends_on = [local.deploy_app_command]
-  triggers = {
-    input_json           = filemd5(data.archive_file.file_function_app.output_path)
-    publish_code_command = local.deploy_app_command
   }
 }

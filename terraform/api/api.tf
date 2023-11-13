@@ -16,7 +16,7 @@ resource "null_resource" "api_app_build" {
 }
 
 data "archive_file" "file_api_app" {
-    depends_on = [ null_resource.api_app_build ]
+  depends_on  = [null_resource.api_app_build]
   type        = "zip"
   source_dir  = "${path.module}/../../src/Demo.Processing/Demo.Processing.Api/bin/Debug/net7.0/publish/"
   output_path = "api-app.zip"
@@ -34,11 +34,11 @@ resource "azurerm_service_plan" "app_service_plan" {
   name                = random_pet.azurerm_service_plan_name.id
   location            = var.location
   resource_group_name = var.resource_group_name
-  os_type             = "Linux"
-  sku_name            = "B1"
+  os_type             = "Windows"
+  sku_name            = "D1"
 }
 
-resource "azurerm_linux_web_app" "api_app" {
+resource "azurerm_windows_web_app" "api_app" {
   name                = random_pet.azurerm_api_app_name.id
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -46,19 +46,22 @@ resource "azurerm_linux_web_app" "api_app" {
   app_settings = {
     "WEBSITE_RUN_FROM_PACKAGE"              = "1",
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.app_insights_connection_string,
+    "WEBSITE_ENABLE_SYNC_UPDATE_SITE"       = "false",
   }
   site_config {
+    always_on = false
   }
 }
 
 locals {
-  deploy_app_command = "az webapp deployment source config-zip --resource-group ${var.resource_group_name} --name ${azurerm_linux_web_app.api_app.name} --src ${data.archive_file.file_api_app.output_path}"
+  depends_on         = [azurerm_windows_web_app.api_app]
+  deploy_app_command = "az webapp deployment source config-zip --resource-group ${var.resource_group_name} --name ${azurerm_windows_web_app.api_app.name} --src ${data.archive_file.file_api_app.output_path}"
 }
 
 resource "null_resource" "function_app_publish" {
-  depends_on = [local.deploy_app_command]
+  depends_on = [local.deploy_app_command, data.archive_file.file_api_app]
   triggers = {
-    input_json           = filemd5(data.archive_file.file_api_app.output_path)
+    input_zip            = data.archive_file.file_api_app.output_md5
     publish_code_command = local.deploy_app_command
   }
   provisioner "local-exec" {
