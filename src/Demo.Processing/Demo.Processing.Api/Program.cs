@@ -1,3 +1,7 @@
+using Demo.Processing.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
+
 namespace Demo.Processing.Api;
 
 public class Program
@@ -8,6 +12,16 @@ public class Program
 
         // Add services to the container.
         builder.Services.AddControllers();
+
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        {
+            options.UseSqlServer(builder.Configuration.GetValue<string>("SqlConnectionString"));
+        });
+
+        builder.Services.AddAzureClients(clientBuilder =>
+        {
+            clientBuilder.AddBlobServiceClient(builder.Configuration.GetConnectionString("FormsStorage"));
+        });
 
         var app = builder.Build();
 
