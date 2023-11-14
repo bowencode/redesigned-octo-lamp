@@ -9,11 +9,11 @@ namespace Demo.Processing.Api.Controllers;
 [ApiController]
 public class FormController : ControllerBase
 {
-    private readonly BlobContainerClient _blobContainer;
+    private readonly BlobServiceClient _blobService;
 
-    public FormController(BlobContainerClient blobContainer)
+    public FormController(BlobServiceClient blobService)
     {
-        _blobContainer = blobContainer;
+        _blobService = blobService;
     }
 
     [HttpPost]
@@ -30,21 +30,11 @@ public class FormController : ControllerBase
             ZipCode = request.ZipCode,
         };
 
-        string fileName = $"{form.Name}-{form.ActiveDate:yyyyMMdd}.json";
-        var client = _blobContainer.GetBlobClient(fileName);
+        var blobContainer = _blobService.GetBlobContainerClient("received-forms");
+        string fileName = $"{form.Name}-{Guid.NewGuid()}.json";
+        var client = blobContainer.GetBlobClient(fileName);
         await client.UploadAsync(new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(form))));
 
         return Ok(fileName);
     }
-}
-
-public class FormRequest
-{
-    public bool IsIndividual { get; set; }
-    public string? Name { get; set; }
-    public DateTime? ActiveDate { get; set; }
-    public string? Street { get; set; }
-    public string? City { get; set; }
-    public string? State { get; set; }
-    public string? ZipCode { get; set; }
 }

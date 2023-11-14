@@ -7,6 +7,10 @@ using Microsoft.Extensions.Hosting;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
+    .ConfigureHostConfiguration(config =>
+    {
+        config.AddUserSecrets<Program>();
+    })
     .ConfigureServices((ctx, services) =>
     {
         services.AddDbContext<ApplicationDbContext>(options =>
@@ -16,7 +20,7 @@ var host = new HostBuilder()
 
         services.AddAzureClients(clientBuilder =>
         {
-            clientBuilder.AddQueueServiceClient(ctx.Configuration.GetConnectionString("FormsQueue"));
+            clientBuilder.AddQueueServiceClient(ctx.Configuration.GetValue<string>("FormsQueue"));
         });
     })
     .Build();

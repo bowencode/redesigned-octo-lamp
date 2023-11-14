@@ -2,6 +2,7 @@ using System;
 using Azure.Storage.Queues.Models;
 using Demo.Processing.Data;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Demo.Processing.Functions
@@ -18,9 +19,48 @@ namespace Demo.Processing.Functions
         }
 
         [Function(nameof(SubmitIndividual))]
-        public void Run([QueueTrigger("individual-form", Connection = "FormsQueue")] QueueMessage message)
+        public async Task Run([QueueTrigger("individual-form", Connection = "FormsQueue")] QueueMessage message)
         {
             _logger.LogInformation($"C# Queue trigger function processed: {message.MessageText}");
+
+            var form = message.Body.ToObjectFromJson<CommonForm>();
+
+            if (form.Name == null)
+            {
+                _logger.LogError("Unable to deserialize form");
+                return;
+            }
+
+            _logger.LogInformation($"Saving individual {form.Name}");
+            var user = await _dbContext.Users.FirstOrDefaultAsync(c => c.Name == form.Name);
+            if (user != null)
+            {
+                user.ActiveDate = DateTime.UtcNow;
+                user.MailingAddress = new MailingAddress
+                {
+                    Street = form.Street,
+                    City = form.City,
+                    State = form.State,
+                    ZipCode = form.ZipCode,
+                };
+            }
+            else
+            {
+                _dbContext.Users.Add(new User
+                {
+                    Name = form.Name,
+                    ActiveDate = DateTime.UtcNow,
+                    MailingAddress = new MailingAddress
+                    {
+                        Street = form.Street,
+                        City = form.City,
+                        State = form.State,
+                        ZipCode = form.ZipCode,
+                    },
+                });
+            }
+
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

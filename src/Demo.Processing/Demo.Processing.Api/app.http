@@ -1,0 +1,16 @@
+###
+POST https://localhost:7018/api/form
+Content-Type: application/json
+
+{
+    "name": "test5",
+    "isIndividual": true,
+    "activeDate": "2021-01-01",
+    "street": "test",
+    "city": "test",
+    "state": "CA",
+    "zipCode": "test"
+}
+
+###
+GET https://localhost:7018/api/report

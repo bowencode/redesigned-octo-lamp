@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Processing.Api", "Demo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Processing.Functions", "Demo.Processing.Functions\Demo.Processing.Functions.csproj", "{0C83F321-82A4-4CA8-8AA4-27DD24B05385}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Processing.Data", "Demo.Processing.Data\Demo.Processing.Data.csproj", "{DA04859C-2B9A-4F46-B05D-8F7E17992942}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Demo.Processing.Data", "Demo.Processing.Data\Demo.Processing.Data.csproj", "{DA04859C-2B9A-4F46-B05D-8F7E17992942}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

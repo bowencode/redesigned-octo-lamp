@@ -20,7 +20,7 @@ public class Program
 
         builder.Services.AddAzureClients(clientBuilder =>
         {
-            clientBuilder.AddBlobServiceClient(builder.Configuration.GetConnectionString("FormsStorage"));
+            clientBuilder.AddBlobServiceClient(builder.Configuration.GetValue<string>("FormsStorage"));
         });
 
         var app = builder.Build();

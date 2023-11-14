@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using Azure.Storage.Queues;
 using Demo.Processing.Data;
@@ -18,9 +19,9 @@ namespace Demo.Processing.Functions
         }
 
         [Function(nameof(ParseForm))]
-        public async Task Run([BlobTrigger("received/{name}", Connection = "FormsStorage")] Stream stream, string name)
+        public async Task Run([BlobTrigger("received-forms/{name}", Connection = "FormsStorage")] Stream stream, string name)
         {
-            _logger.LogInformation($"C# Blob trigger function Processed blob\n Name:{name} \n Size: {stream.Length} Bytes");
+            _logger.LogInformation($"C# Blob trigger function Processed blob\n Name:{name}");
             var form = await JsonSerializer.DeserializeAsync<CommonForm>(stream);
 
             if (form is null)
@@ -32,13 +33,18 @@ namespace Demo.Processing.Functions
             if (form.SubmissionType == SubmissionType.Company)
             {
                 _logger.LogInformation("Sending to company queue");
-                await _queueService.GetQueueClient("company-form").SendMessageAsync(JsonSerializer.Serialize(form));
+                await _queueService.GetQueueClient("company-form").SendMessageAsync(AsMessage(form));
             }
             else
             {
                 _logger.LogInformation("Sending to individual queue");
-                await _queueService.GetQueueClient("individual-form").SendMessageAsync(JsonSerializer.Serialize(form));
+                await _queueService.GetQueueClient("individual-form").SendMessageAsync(AsMessage(form));
             }
+        }
+
+        private static string AsMessage(CommonForm form)
+        {
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(form)));
         }
     }
 }
