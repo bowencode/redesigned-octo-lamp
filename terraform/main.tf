@@ -46,6 +46,14 @@ module "sql-server" {
   local_ip_address    = var.local_ip_address
 }
 
+module "kv" {
+  source                         = "./kv"
+  resource_group_name            = azurerm_resource_group.app-test-rg.name
+  location                       = azurerm_resource_group.app-test-rg.location
+  connection_string_secret_name  = "SqlConnectionString"
+  connection_string_secret_value = module.sql-server.sql_connection_string
+}
+
 module "function-app" {
   source                             = "./functions"
   resource_group_name                = azurerm_resource_group.app-test-rg.name
