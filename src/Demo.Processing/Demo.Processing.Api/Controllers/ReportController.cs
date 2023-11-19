@@ -1,4 +1,5 @@
 ﻿using Demo.Processing.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Demo.Processing.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ReportController : ControllerBase
 {
     private readonly ApplicationDbContext _dbContext;

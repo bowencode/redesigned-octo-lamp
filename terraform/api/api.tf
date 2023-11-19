@@ -48,6 +48,8 @@ resource "azurerm_windows_web_app" "api_app" {
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.app_insights_connection_string,
     "WEBSITE_ENABLE_SYNC_UPDATE_SITE"       = "false",
     "KeyVaultUrl"                           = var.key_vault_url,
+    "AzureAd:Authority"                     = var.azuread_authority,
+    "AzureAd:Audience"                      = var.azuread_audience,
   }
   site_config {
     always_on = false

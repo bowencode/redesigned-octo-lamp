@@ -2,11 +2,13 @@
 using System.Text.Json;
 using Azure.Storage.Blobs;
 using Demo.Processing.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Demo.Processing.Api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class FormController : ControllerBase
 {
     private readonly BlobServiceClient _blobService;

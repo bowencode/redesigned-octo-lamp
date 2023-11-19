@@ -1,7 +1,9 @@
 using Azure.Identity;
 using Demo.Processing.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Demo.Processing.Api;
 
@@ -49,6 +51,16 @@ public class Program
             clientBuilder.AddBlobServiceClient(builder.Configuration.GetValue<string>("FormsStorage"));
         });
 
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.Authority = builder.Configuration.GetValue<string>("AzureAd:Authority");
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidAudiences = new[] { builder.Configuration.GetValue<string>("AzureAd:Audience") }
+                };
+            });
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -64,6 +76,7 @@ public class Program
 
         app.UseRouting();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();

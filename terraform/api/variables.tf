@@ -21,3 +21,15 @@ variable "key_vault_url" {
   type        = string
   nullable    = false
 }
+
+variable "azuread_authority" {
+  description = "Azure AD Authority"
+  type        = string
+  nullable    = false
+}
+
+variable "azuread_audience" {
+  description = "Azure AD Audience"
+  type        = string
+  nullable    = false  
+}

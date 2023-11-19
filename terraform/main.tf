@@ -46,6 +46,26 @@ module "sql-server" {
   local_ip_address    = var.local_ip_address
 }
 
+data "azuread_application" "api-app-registration" {
+  display_name = "TfDemoApiApp"
+}
+
+data "azurerm_client_config" "current" {}
+
+locals {
+  api_app_authority = "https://login.microsoftonline.com/${data.azurerm_client_config.current.tenant_id}"
+  api_app_audience  = data.azuread_application.api-app-registration.identifier_uris[0]
+}
+
+data "azuread_application" "test-app-registration" {
+  display_name = "IntegrationTestApp"
+}
+
+resource "azuread_application_password" "test-app-auth-secret" {
+  display_name = "TerraformGenerated"
+  application_id = data.azuread_application.test-app-registration.id
+}
+
 resource "random_pet" "kv_name" {
 }
 
@@ -70,6 +90,8 @@ module "api-app" {
   location                       = azurerm_resource_group.app-test-rg.location
   app_insights_connection_string = azurerm_application_insights.app-test-ai.connection_string
   key_vault_url                  = local.key_vault_url
+  azuread_authority              = local.api_app_authority
+  azuread_audience               = local.api_app_audience
 }
 
 module "kv" {

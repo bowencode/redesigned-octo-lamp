@@ -11,3 +11,12 @@ output "storage_connection_string" {
 output "api_app_url" {
   value = module.api-app.api_app_url  
 }
+
+output "test_app_client_id" {
+  value = data.azuread_application.test-app-registration.client_id  
+}
+
+output "test_app_client_secret" {
+  value     = azuread_application_password.test-app-auth-secret.value
+  sensitive = true  
+}
