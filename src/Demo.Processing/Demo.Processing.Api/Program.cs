@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Demo.Processing.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Azure;
@@ -9,13 +10,38 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        {
+            var loggerFactory = LoggerFactory.Create(logging => logging.SetMinimumLevel(LogLevel.Debug).AddConsole());
+            var startupLogger = loggerFactory.CreateLogger<Program>();
+            var credentialOptions = new DefaultAzureCredentialOptions();
+
+            string? kvUrlSetting = builder.Configuration.GetValue<string>("KeyVaultUrl");
+            if (!string.IsNullOrEmpty(kvUrlSetting))
+            {
+                try
+                {
+                    builder.Configuration.AddAzureKeyVault(
+                        new Uri(kvUrlSetting),
+                        new DefaultAzureCredential(credentialOptions));
+
+                    startupLogger.LogDebug("KeyVault added: {KeyVaultUrl}", kvUrlSetting);
+                }
+                catch (Exception ex)
+                {
+                    startupLogger.LogError(ex, "Failed to add KeyVault");
+                }
+            }
+        }
 
         // Add services to the container.
         builder.Services.AddControllers();
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
         {
-            options.UseSqlServer(builder.Configuration.GetValue<string>("SqlConnectionString"));
+            options.UseSqlServer(builder.Configuration.GetValue<string>("SqlConnectionString"), sqlOptions =>
+            {
+                sqlOptions.EnableRetryOnFailure(3);
+            });
         });
 
         builder.Services.AddAzureClients(clientBuilder =>

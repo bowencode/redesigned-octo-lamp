@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <Target Name="MigrationScript" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Debug'">
-    <Exec Command="dotnet ef migrations script --no-build --idempotent --output dbSetup.sql --project ./Demo.Processing.Data.csproj" ContinueOnError="false" IgnoreExitCode="false" />
-    <Copy SourceFiles="dbSetup.sql" DestinationFolder="../../../terraform/sqlazure"/>
+    <Exec Command="dotnet ef migrations script --no-build --idempotent --output dbSetup.sql --project ./Demo.Processing.Data.csproj" ContinueOnError="true" IgnoreExitCode="false" />
+    <Copy SourceFiles="dbSetup.sql" DestinationFolder="../../../terraform/sqlazure" ContinueOnError="true"/>
   </Target>
 </Project>

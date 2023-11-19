@@ -15,3 +15,9 @@ variable "app_insights_connection_string" {
   type        = string
   nullable    = false  
 }
+
+variable "key_vault_url" {
+  description = "Key Vault URL"
+  type        = string
+  nullable    = false
+}

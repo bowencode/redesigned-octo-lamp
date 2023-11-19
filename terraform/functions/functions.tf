@@ -44,6 +44,9 @@ resource "azurerm_windows_function_app" "function_app" {
     "FUNCTIONS_WORKER_RUNTIME"              = "dotnet-isolated",
     "FUNCTIONS_EXTENSION_VERSION"           = "~4",
     "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.app_insights_connection_string,
+    "FormsQueue"                            = "DefaultEndpointsProtocol=https;AccountName=${var.storage_account_name};AccountKey=${var.storage_account_primary_access_key};QueueEndpoint=https://${var.storage_account_name}.queue.core.windows.net/",
+    "FormsStorage"                          = "DefaultEndpointsProtocol=https;AccountName=${var.storage_account_name};AccountKey=${var.storage_account_primary_access_key};BlobEndpoint=https://${var.storage_account_name}.blob.core.windows.net/",
+    "SqlConnectionString"                   = var.connection_string,
   }
   site_config {
   }

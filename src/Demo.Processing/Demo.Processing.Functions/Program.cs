@@ -15,7 +15,10 @@ var host = new HostBuilder()
     {
         services.AddDbContext<ApplicationDbContext>(options =>
         {
-            options.UseSqlServer(ctx.Configuration.GetValue<string>("SqlConnectionString"));
+            options.UseSqlServer(ctx.Configuration.GetValue<string>("SqlConnectionString"), sqlOptions =>
+            {
+                sqlOptions.EnableRetryOnFailure(3);
+            });
         });
 
         services.AddAzureClients(clientBuilder =>

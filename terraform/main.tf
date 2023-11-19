@@ -46,12 +46,12 @@ module "sql-server" {
   local_ip_address    = var.local_ip_address
 }
 
-module "kv" {
-  source                         = "./kv"
-  resource_group_name            = azurerm_resource_group.app-test-rg.name
-  location                       = azurerm_resource_group.app-test-rg.location
-  connection_string_secret_name  = "SqlConnectionString"
-  connection_string_secret_value = module.sql-server.sql_connection_string
+resource "random_pet" "kv_name" {
+}
+
+locals {
+  kv_name        = "${random_pet.kv_name.id}-kv"
+  key_vault_url  = "https://${local.kv_name}.vault.azure.net/"
 }
 
 module "function-app" {
@@ -61,6 +61,7 @@ module "function-app" {
   storage_account_name               = azurerm_storage_account.storage-account.name
   storage_account_primary_access_key = azurerm_storage_account.storage-account.primary_access_key
   app_insights_connection_string     = azurerm_application_insights.app-test-ai.connection_string
+  connection_string                  = module.sql-server.sql_connection_string
 }
 
 module "api-app" {
@@ -68,4 +69,17 @@ module "api-app" {
   resource_group_name            = azurerm_resource_group.app-test-rg.name
   location                       = azurerm_resource_group.app-test-rg.location
   app_insights_connection_string = azurerm_application_insights.app-test-ai.connection_string
+  key_vault_url                  = local.key_vault_url
+}
+
+module "kv" {
+  source                                 = "./kv"
+  resource_group_name                    = azurerm_resource_group.app-test-rg.name
+  location                               = azurerm_resource_group.app-test-rg.location
+  kv_name                                = local.kv_name
+  connection_string_secret_name          = "SqlConnectionString"
+  connection_string_secret_value         = module.sql-server.sql_connection_string
+  storage_connection_string_secret_name  = "FormsStorage"
+  storage_connection_string_secret_value = azurerm_storage_account.storage-account.primary_connection_string
+  api_app_managed_identity               = module.api-app.api_app_managed_identity
 }

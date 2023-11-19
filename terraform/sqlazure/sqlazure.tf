@@ -41,6 +41,13 @@ resource "azurerm_mssql_firewall_rule" "firewall-local-ip" {
     end_ip_address              = var.local_ip_address == null ? module.ip_address.ip : var.local_ip_address
 }
 
+resource "azurerm_mssql_firewall_rule" "firewall-azure" {
+    name                        = "${azurerm_mssql_server.server.name}-firewall-azure"
+    server_id                   = azurerm_mssql_server.server.id
+    start_ip_address            = "0.0.0.0"
+    end_ip_address              = "0.0.0.0"
+}
+
 resource "null_resource" "db_setup" {
     depends_on = [azurerm_mssql_database.db]
 

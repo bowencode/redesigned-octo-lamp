@@ -27,3 +27,9 @@ variable "app_insights_connection_string" {
   type        = string
   nullable    = false  
 }
+
+variable "connection_string" {
+  description = "SQL Connection String"
+  type        = string
+  nullable    = false
+}
