@@ -62,7 +62,7 @@ data "azuread_application" "test-app-registration" {
 }
 
 resource "azuread_application_password" "test-app-auth-secret" {
-  display_name = "TerraformGenerated"
+  display_name   = "TerraformGenerated"
   application_id = data.azuread_application.test-app-registration.id
 }
 
@@ -70,8 +70,8 @@ resource "random_pet" "kv_name" {
 }
 
 locals {
-  kv_name        = "${random_pet.kv_name.id}-kv"
-  key_vault_url  = "https://${local.kv_name}.vault.azure.net/"
+  kv_name       = "${random_pet.kv_name.id}-kv"
+  key_vault_url = "https://${local.kv_name}.vault.azure.net/"
 }
 
 module "function-app" {
@@ -85,13 +85,15 @@ module "function-app" {
 }
 
 module "api-app" {
-  source                         = "./api"
-  resource_group_name            = azurerm_resource_group.app-test-rg.name
-  location                       = azurerm_resource_group.app-test-rg.location
-  app_insights_connection_string = azurerm_application_insights.app-test-ai.connection_string
-  key_vault_url                  = local.key_vault_url
-  azuread_authority              = local.api_app_authority
-  azuread_audience               = local.api_app_audience
+  depends_on                       = [module.function-app]
+  source                           = "./api"
+  resource_group_name              = azurerm_resource_group.app-test-rg.name
+  location                         = azurerm_resource_group.app-test-rg.location
+  app_insights_instrumentation_key = azurerm_application_insights.app-test-ai.instrumentation_key
+  app_insights_connection_string   = azurerm_application_insights.app-test-ai.connection_string
+  key_vault_url                    = local.key_vault_url
+  azuread_authority                = local.api_app_authority
+  azuread_audience                 = local.api_app_audience
 }
 
 module "kv" {

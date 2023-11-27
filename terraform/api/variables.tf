@@ -10,6 +10,12 @@ variable "location" {
   nullable    = false
 }
 
+variable "app_insights_instrumentation_key" {
+  description = "Application Insights Instrumentation Key"
+  type        = string
+  nullable    = false  
+}
+
 variable "app_insights_connection_string" {
   description = "Application Insights Connection String"
   type        = string

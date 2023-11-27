@@ -19,7 +19,7 @@ variable "storage_account_name" {
 variable "blob_container_name" {
   description = "Blob Storage Container Name"
   type        = string
-  default     = "formintake"
+  default     = "received-forms"
 }
 
 variable "local_ip_address" {

@@ -22,6 +22,7 @@ resource "azurerm_key_vault" "key_vault" {
       "Delete",
       "Backup",
       "Restore",
+      "Purge",
     ]
   }
 

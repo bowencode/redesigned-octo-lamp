@@ -44,12 +44,24 @@ resource "azurerm_windows_web_app" "api_app" {
   location            = var.location
   service_plan_id     = azurerm_service_plan.app_service_plan.id
   app_settings = {
-    "WEBSITE_RUN_FROM_PACKAGE"              = "1",
-    "APPLICATIONINSIGHTS_CONNECTION_STRING" = var.app_insights_connection_string,
-    "WEBSITE_ENABLE_SYNC_UPDATE_SITE"       = "false",
-    "KeyVaultUrl"                           = var.key_vault_url,
-    "AzureAd:Authority"                     = var.azuread_authority,
-    "AzureAd:Audience"                      = var.azuread_audience,
+    "WEBSITE_RUN_FROM_PACKAGE"                        = "1",
+    "APPLICATIONINSIGHTS_CONNECTION_STRING"           = var.app_insights_connection_string,
+    "APPINSIGHTS_INSTRUMENTATIONKEY"                  = var.app_insights_instrumentation_key,
+    "APPINSIGHTS_PROFILERFEATURE_VERSION"             = "1.0.0",
+    "APPINSIGHTS_SNAPSHOTFEATURE_VERSION"             = "1.0.0",
+    "ApplicationInsightsAgent_EXTENSION_VERSION"      = "~2",
+    "WEBSITE_ENABLE_SYNC_UPDATE_SITE"                 = "false",
+    "KeyVaultUrl"                                     = var.key_vault_url,
+    "AzureAd:Authority"                               = var.azuread_authority,
+    "AzureAd:Audience"                                = var.azuread_audience,
+    "DiagnosticServices_EXTENSION_VERSION"            = "~3",
+    "InstrumentationEngine_EXTENSION_VERSION"         = "disabled",
+    "SnapshotDebugger_EXTENSION_VERSION"              = "disabled",
+    "XDT_MicrosoftApplicationInsights_BaseExtensions" = "disabled",
+    "XDT_MicrosoftApplicationInsights_Mode"           = "recommended",
+    "XDT_MicrosoftApplicationInsights_PreemptSdk"     = "1",
+    "XDT_MicrosoftApplicationInsights_Java"           = "1",
+    "XDT_MicrosoftApplicationInsights_NodeJS"         = "1",
   }
   site_config {
     always_on = false
