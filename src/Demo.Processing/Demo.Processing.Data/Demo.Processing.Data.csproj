@@ -4,6 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Configurations>Debug;Release;DataScript</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,8 +16,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.13" />
   </ItemGroup>
 
-  <Target Name="MigrationScript" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Debug'">
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <Target Name="MigrationScript" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'DataScript'">
     <Exec Command="dotnet ef migrations script --no-build --idempotent --output dbSetup.sql --project ./Demo.Processing.Data.csproj" ContinueOnError="true" IgnoreExitCode="false" />
-    <Copy SourceFiles="dbSetup.sql" DestinationFolder="../../../terraform/sqlazure" ContinueOnError="true"/>
+    <Copy SourceFiles="dbSetup.sql" DestinationFolder="../../../terraform/sqlazure" ContinueOnError="true" />
   </Target>
 </Project>

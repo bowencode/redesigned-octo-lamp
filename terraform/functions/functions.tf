@@ -1,6 +1,6 @@
 resource "null_resource" "function_app_build" {
   triggers = {
-    app_md5 = "${filemd5("${path.module}/../../src/Demo.Processing/Demo.Processing.Functions/bin/Debug/net7.0/Demo.Processing.Functions.exe")}"
+    app_md5 = "${filemd5("${path.module}/../../src/Demo.Processing/Demo.Processing.Functions/bin/Debug/net7.0/Demo.Processing.Functions.dll")}"
   }
 
   provisioner "local-exec" {
@@ -39,6 +39,7 @@ resource "azurerm_windows_function_app" "function_app" {
   service_plan_id            = azurerm_service_plan.app_service_plan.id
   storage_account_name       = var.storage_account_name
   storage_account_access_key = var.storage_account_primary_access_key
+
   app_settings = {
     "WEBSITE_RUN_FROM_PACKAGE"              = "1",
     "FUNCTIONS_WORKER_RUNTIME"              = "dotnet-isolated",
@@ -49,6 +50,7 @@ resource "azurerm_windows_function_app" "function_app" {
     "SqlConnectionString"                   = var.connection_string,
   }
   site_config {
+    use_32_bit_worker = false
   }
 }
 

@@ -11,20 +11,20 @@ GO
 BEGIN TRANSACTION;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20231113010017_InitialSetup')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20231201070648_DatabaseSetup')
 BEGIN
     CREATE TABLE [MailingAddresses] (
         [Id] int NOT NULL IDENTITY,
         [Street] nvarchar(max) NULL,
         [City] nvarchar(max) NULL,
-        [State] nvarchar(max) NULL,
+        [State] nvarchar(2) NULL,
         [ZipCode] nvarchar(max) NULL,
         CONSTRAINT [PK_MailingAddresses] PRIMARY KEY ([Id])
     );
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20231113010017_InitialSetup')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20231201070648_DatabaseSetup')
 BEGIN
     CREATE TABLE [Companies] (
         [Id] int NOT NULL IDENTITY,
@@ -37,7 +37,7 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20231113010017_InitialSetup')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20231201070648_DatabaseSetup')
 BEGIN
     CREATE TABLE [Users] (
         [Id] int NOT NULL IDENTITY,
@@ -50,22 +50,22 @@ BEGIN
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20231113010017_InitialSetup')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20231201070648_DatabaseSetup')
 BEGIN
     CREATE INDEX [IX_Companies_MailingAddressId] ON [Companies] ([MailingAddressId]);
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20231113010017_InitialSetup')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20231201070648_DatabaseSetup')
 BEGIN
     CREATE INDEX [IX_Users_MailingAddressId] ON [Users] ([MailingAddressId]);
 END;
 GO
 
-IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20231113010017_InitialSetup')
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20231201070648_DatabaseSetup')
 BEGIN
     INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
-    VALUES (N'20231113010017_InitialSetup', N'7.0.13');
+    VALUES (N'20231201070648_DatabaseSetup', N'7.0.13');
 END;
 GO
 

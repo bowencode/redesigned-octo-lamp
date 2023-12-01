@@ -1,18 +1,12 @@
 resource "null_resource" "api_app_build" {
   triggers = {
-    app_md5 = "${filemd5("${path.module}/../../src/Demo.Processing/Demo.Processing.Api/bin/Debug/net7.0/Demo.Processing.Api.exe")}"
+    app_md5 = "${filemd5("${path.module}/../../src/Demo.Processing/Demo.Processing.Api/bin/Debug/net7.0/Demo.Processing.Api.dll")}"
   }
 
   provisioner "local-exec" {
-    command     = "dotnet publish -c Debug ./Demo.Processing.Api.csproj"
+    command     = "dotnet publish -c Debug Demo.Processing.Api.csproj"
     working_dir = "${path.module}/../../src/Demo.Processing/Demo.Processing.Api"
-    interpreter = ["PowerShell"]
   }
-
-  # provisioner "local-exec" {
-  #     command = "Compress-Archive -Path ${path.module}/../src/Demo.Processing/Demo.Processing.Api/bin/Debug/net7.0/publish/* -DestinationPath ${path.module}/publish/api/Demo.Processing.Api.zip -Force"
-  #     interpreter = ["PowerShell"]
-  # }
 }
 
 data "archive_file" "file_api_app" {

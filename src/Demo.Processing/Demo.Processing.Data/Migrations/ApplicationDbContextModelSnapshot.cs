@@ -59,7 +59,8 @@ namespace Demo.Processing.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
 
                     b.Property<string>("Street")
                         .HasColumnType("nvarchar(max)");

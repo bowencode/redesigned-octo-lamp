@@ -35,7 +35,7 @@ namespace Demo.Processing.Functions
             var user = await _dbContext.Users.FirstOrDefaultAsync(c => c.Name == form.Name);
             if (user != null)
             {
-                user.ActiveDate = DateTime.UtcNow;
+                user.ActiveDate = form.ActiveDate;
                 user.MailingAddress = new MailingAddress
                 {
                     Street = form.Street,
@@ -49,7 +49,7 @@ namespace Demo.Processing.Functions
                 _dbContext.Users.Add(new User
                 {
                     Name = form.Name,
-                    ActiveDate = DateTime.UtcNow,
+                    ActiveDate = form.ActiveDate,
                     MailingAddress = new MailingAddress
                     {
                         Street = form.Street,

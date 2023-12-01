@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Demo.Processing.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231113010017_InitialSetup")]
-    partial class InitialSetup
+    [Migration("20231201070648_DatabaseSetup")]
+    partial class DatabaseSetup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,7 +62,8 @@ namespace Demo.Processing.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
 
                     b.Property<string>("Street")
                         .HasColumnType("nvarchar(max)");

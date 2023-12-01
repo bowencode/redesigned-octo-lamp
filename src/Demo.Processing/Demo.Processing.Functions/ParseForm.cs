@@ -30,21 +30,32 @@ namespace Demo.Processing.Functions
                 return;
             }
 
-            if (form.SubmissionType == SubmissionType.Company)
+            try
             {
-                _logger.LogInformation("Sending to company queue");
-                await _queueService.GetQueueClient("company-form").SendMessageAsync(AsMessage(form));
+                var queueName = GetQueueName(form);
+                _logger.LogInformation($"Sending to {queueName} queue");
+                await _queueService.GetQueueClient(queueName).SendMessageAsync(AsMessage(form));
             }
-            else
+            catch (Exception ex)
             {
-                _logger.LogInformation("Sending to individual queue");
-                await _queueService.GetQueueClient("individual-form").SendMessageAsync(AsMessage(form));
+                _logger.LogError(ex, "Unable to send message to queue");
+                throw;
             }
         }
 
         private static string AsMessage(CommonForm form)
         {
             return Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(form)));
+        }
+
+        private static string GetQueueName(CommonForm form)
+        {
+            return form.SubmissionType switch
+            {
+                SubmissionType.Company => "company-forms",
+                SubmissionType.Individual => "individual-form",
+                _ => throw new ArgumentOutOfRangeException(),
+            };
         }
     }
 }

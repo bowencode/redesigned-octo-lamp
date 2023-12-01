@@ -51,6 +51,10 @@ resource "azurerm_mssql_firewall_rule" "firewall-azure" {
 resource "null_resource" "db_setup" {
     depends_on = [azurerm_mssql_database.db]
 
+    triggers = {
+      scripts = file("${path.module}/dbSetup.sql")
+    }
+
     provisioner "local-exec" {
         command = "sqlcmd -d ${var.db_name} -U ${var.admin_username} -P ${local.admin_password} -S ${azurerm_mssql_server.server.name}.database.windows.net -i ${path.module}/dbSetup.sql"
     }

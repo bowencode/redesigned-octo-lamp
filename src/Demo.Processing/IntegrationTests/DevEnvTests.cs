@@ -19,19 +19,35 @@ public class DevEnvTests
     }
 
     [Fact]
-    public async Task SubmittedFormIsProcessed()
+    public async Task SubmittedForm_ForIndividual_IsProcessed()
     {
         var utility = new CloudTestUtility(Output);
         var variables = await utility.LoadVariables();
 
-        Assert.NotNull(variables?.ApiAppUrl?.Value);
+        Assert.NotNull(variables);
+
+        string? token = await GetAuthToken(variables);
+
+        var dataGenerator = new Faker();
+        string stateCode = dataGenerator.Address.StateAbbr();
+        string personName = dataGenerator.Name.FullName();
+
+        ReportResponse? reportData = await SubmitAndVerifyForm(variables, token, personName, stateCode);
+
+        Assert.NotNull(reportData?.Users);
+        Assert.True(reportData.Users.TryGetValue(personName, out var state));
+        Assert.Equal(stateCode, state);
+    }
+
+    private async Task<string?> GetAuthToken(TfOutput variables)
+    {
         Assert.NotNull(variables.TestAppClientId?.Value);
         Assert.NotNull(variables.TestAppClientSecret?.Value);
         Assert.NotNull(variables.ApiAppAuthority?.Value);
         Assert.NotNull(variables.ApiAppScope?.Value);
 
-        var client = new HttpClient();
-        var tokenResponse = await client.PostAsync($"{variables.ApiAppAuthority.Value}/oauth2/v2.0/token", new FormUrlEncodedContent(new Dictionary<string, string>
+        var tokenClient = new HttpClient();
+        var tokenResponse = await tokenClient.PostAsync($"{variables.ApiAppAuthority.Value}/oauth2/v2.0/token", new FormUrlEncodedContent(new Dictionary<string, string>
         {
             ["client_id"] = variables.TestAppClientId.Value,
             ["client_secret"] = variables.TestAppClientSecret.Value,
@@ -42,23 +58,80 @@ public class DevEnvTests
         var token = JObject.Parse(await tokenResponse.Content.ReadAsStringAsync())["access_token"]?.Value<string>();
         Output.WriteLine($"Received Token: {token}");
         Assert.NotNull(token);
+        return token;
+    }
 
+    private static async Task<ReportResponse?> GetReportData(TfOutput variables, HttpClient client)
+    {
+        Assert.NotNull(variables.ApiAppUrl?.Value);
+
+        var reportResponse = await client.GetAsync($"{variables.ApiAppUrl.Value}/api/report");
+        Assert.NotNull(reportResponse);
+        Assert.True(reportResponse.IsSuccessStatusCode);
+
+        var reportData = await reportResponse.Content.ReadFromJsonAsync<ReportResponse>();
+        return reportData;
+    }
+
+    private async Task<ReportResponse?> SubmitAndVerifyForm(TfOutput variables, string? token, string name, string stateCode, bool individual = true)
+    {
+        Assert.NotNull(variables.ApiAppUrl?.Value);
+
+        var client = new HttpClient();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var reportData = await GetReportData(variables, client);
-        Assert.NotNull(reportData?.Users);
-        var userCount = reportData.Users.Count;
-        Output.WriteLine($"Initial User Count: {userCount}");
+        int initialCount;
+        if (individual)
+        {
+            Assert.NotNull(reportData?.Users);
+            initialCount = reportData.Users.Count;
+        }
+        else
+        {
+            Assert.NotNull(reportData?.Companies);
+            initialCount = reportData.Companies.Count;
+        }
+        Output.WriteLine($"Initial Count: {initialCount}");
 
+        await SubmitForm(variables, name, stateCode, individual, client);
+
+        Output.WriteLine($"Waiting for form to be processed");
+        await Task.Delay(5000);
+
+        var updatedCount = initialCount;
+        int counter = 0;
+        while (updatedCount == initialCount && counter++ < 30)
+        {
+            await Task.Delay(2000);
+            Output.WriteLine($"Checking for processed form ({counter})");
+            reportData = await GetReportData(variables, client);
+            if (individual)
+            {
+                Assert.NotNull(reportData?.Users);
+                updatedCount = reportData.Users.Count;
+            }
+            else
+            {
+                Assert.NotNull(reportData?.Companies);
+                updatedCount = reportData.Companies.Count;
+            }
+        }
+
+        Output.WriteLine($"Updated Count: {updatedCount}");
+        Assert.NotEqual(initialCount, updatedCount);
+        return reportData;
+    }
+
+    private async Task SubmitForm(TfOutput variables, string name, string stateCode, bool individual, HttpClient client)
+    {
+        Output.WriteLine($"Submitting form for {name} in {stateCode}");
         var dataGenerator = new Faker();
-        string stateCode = dataGenerator.Address.StateAbbr();
-        string personName = dataGenerator.Name.FullName();
-        Output.WriteLine($"Submitting form for {personName} in {stateCode}");
         var formResponse = await client.PostAsync($"{variables.ApiAppUrl.Value}/api/form", new StringContent(JsonConvert.SerializeObject(new FormRequest
         {
-            Name = personName,
+            Name = name,
             ActiveDate = dataGenerator.Date.PastOffset(5).Date,
-            IsIndividual = true,
+            IsIndividual = individual,
             Street = dataGenerator.Address.StreetAddress(),
             City = dataGenerator.Address.City(),
             State = stateCode,
@@ -67,35 +140,26 @@ public class DevEnvTests
 
         Assert.NotNull(formResponse);
         Assert.True(formResponse.IsSuccessStatusCode);
-
-        Output.WriteLine($"Waiting for form to be processed");
-        await Task.Delay(5000);
-
-        var updatedUserCount = userCount;
-        int counter = 0;
-        while (updatedUserCount == userCount && counter++ < 60)
-        {
-            await Task.Delay(2000);
-            Output.WriteLine($"Checking for processed form ({counter})");
-            reportData = await GetReportData(variables, client);
-            Assert.NotNull(reportData?.Users);
-            updatedUserCount = reportData.Users.Count;
-        }
-
-        Output.WriteLine($"Updated User Count: {updatedUserCount}");
-        Assert.NotEqual(userCount, updatedUserCount);
-
-        Assert.True(reportData.Users.TryGetValue(personName, out var state));
-        Assert.Equal(stateCode, state);
     }
 
-    private static async Task<ReportResponse?> GetReportData(TfOutput? variables, HttpClient client)
+    [Fact]
+    public async Task SubmittedForm_ForLondonCompany_IsProcessed()
     {
-        var reportResponse = await client.GetAsync($"{variables.ApiAppUrl.Value}/api/report");
-        Assert.NotNull(reportResponse);
-        Assert.True(reportResponse.IsSuccessStatusCode);
+        var utility = new CloudTestUtility(Output);
+        var variables = await utility.LoadVariables();
 
-        var reportData = await reportResponse.Content.ReadFromJsonAsync<ReportResponse>();
-        return reportData;
+        Assert.NotNull(variables);
+
+        string? token = await GetAuthToken(variables);
+
+        var dataGenerator = new Faker();
+        string stateCode = "LND";
+        string personName = dataGenerator.Name.FullName();
+
+        ReportResponse? reportData = await SubmitAndVerifyForm(variables, token, personName, stateCode, false);
+
+        Assert.NotNull(reportData?.Companies);
+        Assert.True(reportData.Companies.TryGetValue(personName, out var state));
+        Assert.Equal(stateCode, state);
     }
 }
