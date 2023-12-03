@@ -1,0 +1,35 @@
+###
+@client-id = 22fff08b-277a-4b04-9417-240ae9645afc
+@client-secret = TODO
+@api-app-id-url = api://67c7d368-061c-4df1-912d-41dc802b9109
+@audience = {{api-app-id-url}}/.default
+@tenant-id = 65062e1b-a0a2-43e6-84fa-f7b72598151f
+@app-subdomain = TODO
+@app-url = https://{{app-subdomain}}.azurewebsites.net
+
+###
+# Get access token from Azure AD
+# @name aadToken
+POST https://login.microsoftonline.com/{{tenant-id}}/oauth2/v2.0/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id={{client-id}}&scope={{audience}}&client_secret={{client-secret}}&grant_type=client_credentials
+
+###
+POST https://{{app-url}}/api/form
+Content-Type: application/json
+Authorization: Bearer {{aadToken.response.body.access_token}}
+
+{
+    "name": "test5",
+    "isIndividual": true,
+    "activeDate": "2021-01-01",
+    "street": "test",
+    "city": "test",
+    "state": "CA",
+    "zipCode": "test"
+}
+
+###
+GET https://{{app-url}}/api/report
+Authorization: Bearer {{aadToken.response.body.access_token}}
