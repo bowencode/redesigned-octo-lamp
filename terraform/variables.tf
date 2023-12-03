@@ -1,9 +1,3 @@
-variable "resource_group_name" {
-  description = "Resource Group Name"
-  type        = string
-  default     = "tf-demo-app-test-rg"
-}
-
 variable "azure_region" {
   description = "Azure Region"
   type        = string
