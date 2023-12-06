@@ -4,7 +4,7 @@ resource "random_pet" "test_name" {
 
 resource "azurerm_resource_group" "demo-rg" {
   name     = "${random_pet.test_name.id}-rg"
-  location = "westus"
+  location = "eastus"
 }
 
 resource "azurerm_storage_account" "storage-account" {

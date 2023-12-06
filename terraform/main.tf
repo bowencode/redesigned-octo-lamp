@@ -47,7 +47,7 @@ module "sql-server" {
 }
 
 data "azuread_application" "api-app-registration" {
-  display_name = "TfDemoApiApp"
+  display_name = var.api_app_registration_name
 }
 
 data "azurerm_client_config" "current" {}
@@ -58,7 +58,7 @@ locals {
 }
 
 data "azuread_application" "test-app-registration" {
-  display_name = "IntegrationTestApp"
+  display_name = var.test_app_registration_name
 }
 
 resource "azuread_application_password" "test-app-auth-secret" {
