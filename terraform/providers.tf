@@ -16,7 +16,7 @@ terraform {
 }
 
 provider "azapi" {
-  default_location = "westus"
+  default_location = "eastus"
   default_tags = {
     team = "My Dev Testing"
   }
